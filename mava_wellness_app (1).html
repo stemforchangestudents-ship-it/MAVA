@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mava - Mind & Heart Wellness</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            mavaBg: '#F0F7FF',
+            mavaCard: '#FFFFFF',
+            mavaBlueLight: '#E0F2FE',
+            mavaBlueSoft: '#BAE6FD',
+            mavaBlueAccent: '#3B82F6',
+            mavaBlueDark: '#1E40AF',
+            mavaText: '#1E293B',
+            mavaMuted: '#64748B',
+            mavaRoseBg: '#FEF2F2',
+            mavaRoseBorder: '#FECACA',
+            mavaRoseText: '#991B1B',
+            mavaGreenBg: '#F0FDF4',
+            mavaGreenText: '#166534',
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-gentle': 'bounce 2s infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* Custom styling for sleek interactions and touch prevention */
+    body {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      background-color: #CBD5E1;
+    }
+    
+    /* Custom Scrollbar for smooth scroll */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Range slider styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: #E2E8F0;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #3B82F6;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+      transition: transform 0.1s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:active {
+      transform: scale(1.15);
+    }
+
+    /* Breathing animation expansion */
+    @keyframes breatheAnimation {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      25% { transform: scale(1.35); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.9; }
+      75% { transform: scale(1); opacity: 0.8; }
+    }
+    .anim-breathe {
+      animation: breatheAnimation 16s ease-in-out infinite;
+    }
+
+    /* Progress Ring Styling */
+    .progress-ring__circle {
+      transition: stroke-dashoffset 0.1s linear;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 sm:p-4 font-sans text-mavaText">
+
+  <!-- Main Phone Frame Container -->
+  <div id="appShell" class="w-full sm:max-w-[410px] h-[100vh] sm:h-[840px] bg-mavaBg sm:rounded-[40px] shadow-2xl flex flex-column flex-col relative overflow-hidden border-0 sm:border-[8px] border-white">
+    
+    <!-- HEADER BAR -->
+    <header class="bg-white/80 backdrop-blur-md px-5 py-4 flex items-center justify-between border-b border-mavaBlueLight/60 z-20 shrink-0">
+      <div class="flex items-center gap-3">
+        <!-- Minimal Rounded Cross Logo (Tap 3x for secret unlock) -->
+        <div id="crossLogo" class="w-9 h-9 bg-mavaBlueSoft rounded-xl flex items-center justify-center cursor-pointer active:scale-95 transition-transform relative group">
+          <!-- Horizontal bar -->
+          <div class="w-4 h-1.5 bg-mavaBlueDark rounded-full"></div>
+          <!-- Vertical bar -->
+          <div class="h-4 w-1.5 bg-mavaBlueDark rounded-full absolute"></div>
+        </div>
+        <div>
+          <h1 id="appTitleText" class="text-xl font-black tracking-wider text-mavaText leading-none">MAVA</h1>
+          <p id="appSubtitleText" class="text-[10px] font-medium text-mavaMuted tracking-tight mt-0.5">Mind & Heart Health</p>
+        </div>
+      </div>
+
+      <!-- Quick Disguise Button -->
+      <button id="disguiseToggleBtn" onclick="toggleStealthMode()" class="px-3 py-1.5 bg-mavaBlueLight hover:bg-mavaBlueSoft text-mavaBlueDark text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-gamepad text-mavaBlueDark"></i>
+        <span id="disguiseBtnLabel">Disguise</span>
+      </button>
+    </header>
+
+    <!-- MAIN CONTENT VIEWPORT -->
+    <main class="flex-1 overflow-y-auto no-scrollbar p-5 space-y-4 pb-24 relative" id="mainContentArea">
+
+      <!-- ================= VIEW 1: HEALTH & MIND TRACKER ================= -->
+      <section id="viewTracker" class="space-y-4">
+        
+        <!-- Live Status Gauge Header -->
+        <div class="bg-mavaCard rounded-3xl p-5 border border-mavaBlueLight/80 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-mavaMuted">Real-Time State</span>
+            <span id="liveStatusBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-mavaGreenBg text-mavaGreenText flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Optimal
+            </span>
+          </div>
+
+          <div class="flex items-center justify-around py-2">
+            <!-- Heart Rate Display -->
+            <div class="text-center">
+              <div class="text-3xl font-black text-mavaText flex items-baseline justify-center gap-1">
+                <span id="displayBpm">72</span>
+                <span class="text-xs font-semibold text-mavaMuted">BPM</span>
+              </div>
+              <div class="text-xs font-medium text-mavaMuted mt-1 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-heartbeat text-mavaBlueAccent"></i> Heart Rate
+              </div>
+            </div>
+
+            <div class="h-10 w-[1px] bg-slate-200"></div>
+
+            <!-- Stress Display -->
+            <div class="text-center">
+              <div class="text-3xl font-black text-mavaText flex items-baseline justify-center gap-1">
+                <span id="displayStress">3</span>
+                <span class="text-xs font-semibold text-mavaMuted">/10</span>
+              </div>
+              <div class="text-xs font-medium text-mavaMuted mt-1 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-brain text-mavaBlueDark"></i> Stress Level
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Warning Advisory Alert Card (Conditional) -->
+        <div id="healthAdvisoryCard" class="hidden bg-mavaRoseBg border border-mavaRoseBorder rounded-2xl p-4 shadow-sm animate-fade-in">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
+              <i class="fa-solid fa-triangle-exclamation text-mavaRoseText text-sm"></i>
+            </div>
+            <div class="space-y-1">
+              <h4 class="text-sm font-bold text-mavaRoseText">Mind-Heart Correlation Alert</h4>
+              <p class="text-xs text-red-900/80 leading-relaxed" id="advisoryText">
+                Elevated heart rate and high stress levels detected simultaneously. Persistent mental stress releases cortisol, stiffening vessels and straining cardiovascular response.
+              </p>
+              <div class="pt-2 flex gap-2">
+                <button onclick="switchTab('relax')" class="px-3 py-1 bg-white text-mavaRoseText text-xs font-semibold rounded-lg border border-mavaRoseBorder shadow-xs hover:bg-red-50">
+                  Breathing Exercise
+                </button>
+                <button onclick="switchTab('sos')" class="px-3 py-1 bg-mavaRoseText text-white text-xs font-semibold rounded-lg shadow-xs hover:bg-red-800">
+                  SOS Check-in
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Sliders Input Card -->
+        <div class="bg-mavaCard rounded-3xl p-5 border border-mavaBlueLight/80 shadow-sm space-y-5">
+          <h3 class="text-sm font-bold text-mavaText flex items-center justify-between">
+            <span>Log Current Metrics</span>
+            <i class="fa-solid fa-sliders text-mavaMuted text-xs"></i>
+          </h3>
+
+          <!-- BPM Slider -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs font-semibold">
+              <span class="text-mavaMuted">Resting Heart Rate</span>
+              <span class="text-mavaBlueDark font-bold" id="sliderBpmValue">72 BPM</span>
+            </div>
+            <input type="range" id="inputBpm" min="50" max="140" value="72" oninput="handleMetricChange()" />
+            <div class="flex justify-between text-[10px] text-mavaMuted font-medium px-1">
+              <span>50 BPM (Calm)</span>
+              <span>90 BPM</span>
+              <span>140 BPM (High)</span>
+            </div>
+          </div>
+
+          <!-- Stress Slider -->
+          <div class="space-y-2 pt-1">
+            <div class="flex justify-between text-xs font-semibold">
+              <span class="text-mavaMuted">Perceived Stress</span>
+              <span class="text-mavaBlueDark font-bold" id="sliderStressValue">3 - Mild</span>
+            </div>
+            <input type="range" id="inputStress" min="1" max="10" value="3" oninput="handleMetricChange()" />
+            <div class="flex justify-between text-[10px] text-mavaMuted font-medium px-1">
+              <span>1 (Rest)</span>
+              <span>5 (Moderate)</span>
+              <span>10 (Severe)</span>
+            </div>
+          </div>
+
+          <!-- Notes / Triggers Input -->
+          <div class="pt-2 space-y-2">
+            <label class="text-xs font-semibold text-mavaMuted block">Notes or Triggers</label>
+            <input type="text" id="logNoteInput" placeholder="e.g. Felt sudden flutter, busy workday..." class="w-full px-3.5 py-2.5 bg-mavaBg border border-slate-200 rounded-xl text-xs text-mavaText focus:outline-none focus:border-mavaBlueAccent transition-colors" />
+            <button onclick="saveHealthLog()" class="w-full py-2.5 bg-mavaBlueAccent hover:bg-mavaBlueDark text-white font-bold text-xs rounded-xl shadow-md shadow-mavaBlueAccent/20 transition-all active:scale-[0.98]">
+              Record Entry in Journal
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Logs History List -->
+        <div class="bg-mavaCard rounded-3xl p-5 border border-mavaBlueLight/80 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-mavaMuted">Recent Log Entries</h3>
+            <span class="text-[10px] text-mavaMuted" id="entryCount">0 entries</span>
+          </div>
+          <div id="logsHistoryContainer" class="space-y-2 max-h-48 overflow-y-auto no-scrollbar">
+            <!-- Entries injected dynamically -->
+            <p class="text-xs text-mavaMuted text-center py-4 italic">No entries logged today yet.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VIEW 2: SOS & EMERGENCY CONTACTS ================= -->
+      <section id="viewSos" class="space-y-4 hidden">
+        
+        <!-- Interactive 3-Second Hold SOS Button -->
+        <div class="bg-mavaCard rounded-3xl p-6 border border-mavaBlueLight/80 shadow-sm text-center space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-mavaText">Emergency SOS Dispatch</h3>
+            <p class="text-xs text-mavaMuted mt-0.5">Press & hold the button below for 3 seconds to send instant emergency location alerts to your contacts.</p>
+          </div>
+
+          <!-- Hold SOS Trigger Ring -->
+          <div class="relative w-36 h-36 mx-auto flex items-center justify-center">
+            <svg class="w-36 h-36 absolute top-0 left-0">
+              <circle cx="72" cy="72" r="64" stroke="#F1F5F9" stroke-width="8" fill="none" />
+              <circle id="sosProgressCircle" class="progress-ring__circle" cx="72" cy="72" r="64" stroke="#EF4444" stroke-width="8" fill="none" stroke-dasharray="402.12" stroke-dashoffset="402.12" />
+            </svg>
+            
+            <button id="sosTriggerBtn" 
+                    onmousedown="startSosCountdown()" onmouseup="cancelSosCountdown()" onmouseleave="cancelSosCountdown()"
+                    ontouchstart="startSosCountdown()" ontouchend="cancelSosCountdown()"
+                    class="w-28 h-28 bg-red-500 hover:bg-red-600 active:scale-95 text-white rounded-full font-black text-xl shadow-lg shadow-red-500/30 flex flex-col items-center justify-center gap-1 transition-all">
+              <i class="fa-solid fa-bell text-2xl"></i>
+              <span id="sosBtnText">HOLD SOS</span>
+            </button>
+          </div>
+          <p id="sosHelpText" class="text-[11px] font-semibold text-mavaMuted">Hold down for 3s to alert contacts</p>
+        </div>
+
+        <!-- Simulated Automated SMS Preview Card -->
+        <div class="bg-mavaCard rounded-3xl p-5 border border-mavaBlueLight/80 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-mavaMuted flex items-center gap-1.5">
+              <i class="fa-solid fa-comment-sms text-mavaBlueAccent"></i> Automated SMS Alert Preview
+            </h3>
+            <span class="text-[10px] bg-mavaBlueLight text-mavaBlueDark px-2 py-0.5 rounded-full font-bold">Auto-Generated</span>
+          </div>
+
+          <div class="bg-slate-900 text-slate-100 p-3.5 rounded-2xl text-xs font-mono space-y-1.5 leading-relaxed relative">
+            <p><span class="text-red-400 font-bold">[MAVA ALERT]:</span> Emergency health notification for <span class="text-sky-300 font-semibold">User</span>.</p>
+            <p>• Status: <span id="smsPreviewStatus" class="text-amber-300">Elevated Stress & Heart Rate</span></p>
+            <p>• Live GPS: <span class="text-sky-400 underline">maps.google.com/?q=34.0522,-118.2437</span></p>
+            <p>• Medical Note: <span class="text-slate-300">Hypertension | Meds: Metoprolol 25mg</span></p>
+          </div>
+        </div>
+
+        <!-- Emergency Contacts Management -->
+        <div class="bg-mavaCard rounded-3xl p-5 border border-mavaBlueLight/80 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-mavaMuted">Designated Support Network</h3>
+            <button onclick="openAddContactModal()" class="text-xs text-mavaBlueAccent font-bold hover:underline">+ Add</button>
+          </div>
+
+          <div id="contactsListContainer" class="space-y-2.5">
+            <!-- Contact 1 -->
+            <div class="flex items-center justify-between p-3 bg-mavaBg rounded-2xl border border-slate-100">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-100 text-mavaBlueDark flex items-center justify-center font-bold text-sm">SC</div>
+                <div>
+                  <h4 class="text-xs font-bold text-mavaText">Sarah Chen (Partner)</h4>
+                  <p class="text-[10px] text-mavaMuted">+1 (555) 019-2834 • Primary</p>
+                </div>
+              </div>
+              <button onclick="simulateCall('Sarah Chen')" class="px-3 py-1.5 bg-mavaBlueLight hover:bg-mavaBlueSoft text-mavaBlueDark text-xs font-bold rounded-xl transition-colors">
+                <i class="fa-solid fa-phone text-[10px] mr-1"></i> Call
+              </button>
+            </div>
+
+            <!-- Contact 2 -->
+            <div class="flex items-center justify-between p-3 bg-mavaBg rounded-2xl border border-slate-100">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">AV</div>
+                <div>
+                  <h4 class="text-xs font-bold text-mavaText">Dr. Aris Vance (Cardiologist)</h4>
+                  <p class="text-[10px] text-mavaMuted">+1 (555) 014-8821 • Specialist</p>
+                </div>
+              </div>
+              <button onclick="simulateCall('Dr. Aris Vance')" class="px-3 py-1.5 bg-mavaBlueLight hover:bg-mavaBlueSoft text-mavaBlueDark text-xs font-bold rounded-xl transition-colors">
+                <i class="fa-solid fa-phone text-[10px] mr-1"></i> Call
+              </button>
+            </div>
+
+            <!-- Contact 3 -->
+            <div class="flex items-center justify-between p-3 bg-mavaBg rounded-2xl border border-slate-100">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">988</div>
+                <div>
+                  <h4 class="text-xs font-bold text-mavaText">Crisis & Suicide Lifeline</h4>
+                  <p class="text-[10px] text-mavaMuted">988 • 24/7 Mental Health</p>
+                </div>
+              </div>
+              <button onclick="simulateCall('988 Lifeline')" class="px-3 py-1.5 bg-mavaBlueLight hover:bg-mavaBlueSoft text-mavaBlueDark text-xs font-bold rounded-xl transition-colors">
+                <i class="fa-solid fa-phone text-[10px] mr-1"></i> Call
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medical ID Quick View Card -->
+        <div class="bg-mavaCard rounded-3xl p-5 border border-mavaBlueLight/80 shadow-sm space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-mavaMuted">Emergency Medical ID</h3>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="p-2.5 bg-mavaBg rounded-xl border border-slate-100">
+              <span class="text-[10px] text-mavaMuted block">Blood Type</span>
+              <span class="font-bold text-mavaText">O Positive (O+)</span>
+            </div>
+            <div class="p-2.5 bg-mavaBg rounded-xl border border-slate-100">
+              <span class="text-[10px] text-mavaMuted block">Heart Conditions</span>
+              <span class="font-bold text-mavaText">Mild Palpitations</span>
+            </div>
+            <div class="p-2.5 bg-mavaBg rounded-xl border border-slate-100 col-span-2">
+              <span class="text-[10px] text-mavaMuted block">Current Cardiac Meds</span>
+              <span class="font-bold text-mavaText">Metoprolol Succinate 25mg</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VIEW 3: GUIDED RELAXATION & BREATHING ================= -->
+      <section id="viewRelax" class="space-y-4 hidden">
+        
+        <!-- Box Breathing Interactive Card -->
+        <div class="bg-mavaCard rounded-3xl p-6 border border-mavaBlueLight/80 shadow-sm text-center space-y-6">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-mavaBlueAccent">Vagus Nerve Stimulation</span>
+            <h3 class="text-base font-bold text-mavaText mt-0.5">Box Breathing Exercise</h3>
+            <p class="text-xs text-mavaMuted mt-1 max-w-xs mx-auto">Regulate your parasympathetic nervous system to slow down elevated heart rates and alleviate panic spikes.</p>
+          </div>
+
+          <!-- Breathing Animated Bubble Ring -->
+          <div class="relative w-48 h-48 mx-auto flex items-center justify-center my-4">
+            <!-- Background Glow -->
+            <div id="breatheGlow" class="absolute w-44 h-44 bg-mavaBlueLight rounded-full transition-all duration-1000 scale-100 opacity-60"></div>
+            <!-- Animated Expanding Circle -->
+            <div id="breatheCircle" class="w-36 h-36 bg-mavaBlueSoft/80 rounded-full flex flex-col items-center justify-center relative z-10 transition-all duration-1000 border-2 border-mavaBlueDark/20 shadow-inner">
+              <span id="breathePhaseText" class="text-sm font-black text-mavaBlueDark tracking-wider uppercase">Inhale</span>
+              <span id="breatheTimerText" class="text-2xl font-black text-mavaText mt-1">4s</span>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex items-center justify-center gap-3 pt-2">
+            <button id="breatheToggleBtn" onclick="toggleBreathingExercise()" class="px-6 py-2.5 bg-mavaBlueAccent hover:bg-mavaBlueDark text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95">
+              Start Session
+            </button>
+            <button onclick="resetBreathingExercise()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-mavaMuted font-semibold text-xs rounded-xl transition-all">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Mind & Heart Connection Science Tips -->
+        <div class="bg-mavaCard rounded-3xl p-5 border border-mavaBlueLight/80 shadow-sm space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-mavaMuted">The Mind-Heart Connection</h3>
+          
+          <div class="space-y-2.5 text-xs text-mavaMuted leading-relaxed">
+            <div class="p-3 bg-mavaBg rounded-2xl border border-slate-100 flex items-start gap-2.5">
+              <i class="fa-solid fa-heart-pulse text-mavaBlueAccent text-sm mt-0.5"></i>
+              <div>
+                <strong class="text-mavaText block font-bold">Cortisol & Arterial Tightening</strong>
+                When anxiety flares, stress hormones cause peripheral blood vessels to constrict, forcing your heart to pump harder against higher pressure.
+              </div>
+            </div>
+
+            <div class="p-3 bg-mavaBg rounded-2xl border border-slate-100 flex items-start gap-2.5">
+              <i class="fa-solid fa-wind text-mavaBlueDark text-sm mt-0.5"></i>
+              <div>
+                <strong class="text-mavaText block font-bold">Slow Exhalations Lower HR</strong>
+                Extending your exhalations activates the vagus nerve, immediately sending a chemical decelerating signal to the heart's SA node.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VIEW 4: STEALTH DISGUISE MINI-GAME ("PASTEL PETALS") ================= -->
+      <section id="viewGame" class="space-y-4 hidden">
+        
+        <div class="bg-mavaCard rounded-3xl p-5 border border-mavaBlueLight/80 shadow-sm text-center space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="text-left">
+              <h3 class="text-base font-extrabold text-mavaText">Pastel Petals</h3>
+              <p class="text-[11px] text-mavaMuted">Relaxing Tile Match Game</p>
+            </div>
+            <div class="bg-mavaBlueLight text-mavaBlueDark px-3 py-1 rounded-full text-xs font-black">
+              Score: <span id="gameScoreVal">0</span>
+            </div>
+          </div>
+
+          <!-- Playable Game Board Canvas / Grid -->
+          <div id="gameBoardGrid" class="grid grid-cols-4 gap-2.5 p-3 bg-mavaBg rounded-2xl border border-slate-100 max-w-[300px] mx-auto">
+            <!-- Tiles rendered via JS -->
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-mavaMuted px-2">
+            <span class="text-[10px]">Tap matching pastel icons to clear</span>
+            <button onclick="initGame()" class="text-mavaBlueDark font-bold text-xs hover:underline">New Board</button>
+          </div>
+
+          <!-- Discrete SOS Gesture Info -->
+          <div class="pt-2 border-t border-slate-100 text-[10px] text-mavaMuted flex items-center justify-center gap-1">
+            <i class="fa-solid fa-shield-halved text-mavaBlueAccent"></i>
+            <span>Discreet Mode Active • Triple-tap logo to return</span>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- BOTTOM TAB NAVIGATION BAR -->
+    <nav id="bottomNavBar" class="bg-white/90 backdrop-blur-md h-16 border-t border-mavaBlueLight/80 flex items-center justify-around px-2 absolute bottom-0 left-0 right-0 z-20">
+      <button id="navBtnTracker" onclick="switchTab('tracker')" class="flex flex-col items-center gap-0.5 text-mavaBlueAccent font-bold text-[11px] transition-colors py-1 px-3">
+        <i class="fa-solid fa-heart-pulse text-base"></i>
+        <span>Tracker</span>
+      </button>
+
+      <button id="navBtnSos" onclick="switchTab('sos')" class="flex flex-col items-center gap-0.5 text-mavaMuted font-medium text-[11px] transition-colors py-1 px-3">
+        <i class="fa-solid fa-phone-medical text-base"></i>
+        <span>SOS / Contacts</span>
+      </button>
+
+      <button id="navBtnRelax" onclick="switchTab('relax')" class="flex flex-col items-center gap-0.5 text-mavaMuted font-medium text-[11px] transition-colors py-1 px-3">
+        <i class="fa-solid fa-lungs text-base"></i>
+        <span>Relax</span>
+      </button>
+
+      <button id="navBtnGame" onclick="switchTab('game')" class="flex flex-col items-center gap-0.5 text-mavaMuted font-medium text-[11px] transition-colors py-1 px-3">
+        <i class="fa-solid fa-gamepad text-base"></i>
+        <span>Game</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- JavaScript Application State & Interactions -->
+  <script>
+    // --- Application State ---
+    let currentState = {
+      bpm: 72,
+      stress: 3,
+      isStealth: false,
+      logs: [],
+      breathingActive: false,
+      breathingTimer: null,
+      sosCountdownTimer: null,
+      sosHoldProgress: 0,
+      gameScore: 0,
+      secretTaps: 0,
+      tapTimer: null
+    };
+
+    // --- Tab Navigation Switcher ---
+    function switchTab(tabKey) {
+      // Views map
+      const views = {
+        tracker: document.getElementById('viewTracker'),
+        sos: document.getElementById('viewSos'),
+        relax: document.getElementById('viewRelax'),
+        game: document.getElementById('viewGame')
+      };
+
+      // Nav buttons map
+      const navBtns = {
+        tracker: document.getElementById('navBtnTracker'),
+        sos: document.getElementById('navBtnSos'),
+        relax: document.getElementById('navBtnRelax'),
+        game: document.getElementById('navBtnGame')
+      };
+
+      // Hide all views
+      Object.keys(views).forEach(key => {
+        if (views[key]) views[key].classList.add('hidden');
+        if (navBtns[key]) {
+          navBtns[key].classList.remove('text-mavaBlueAccent', 'font-bold');
+          navBtns[key].classList.add('text-mavaMuted', 'font-medium');
+        }
+      });
+
+      // Show selected view
+      if (views[tabKey]) views[tabKey].classList.remove('hidden');
+      if (navBtns[tabKey]) {
+        navBtns[tabKey].classList.add('text-mavaBlueAccent', 'font-bold');
+        navBtns[tabKey].classList.remove('text-mavaMuted', 'font-medium');
+      }
+
+      // If switching to game, ensure game is initialized
+      if (tabKey === 'game') {
+        initGame();
+      }
+    }
+
+    // --- Metric Handler (BPM & Stress Sliders) ---
+    function handleMetricChange() {
+      const bpmVal = parseInt(document.getElementById('inputBpm').value);
+      const stressVal = parseInt(document.getElementById('inputStress').value);
+
+      currentState.bpm = bpmVal;
+      currentState.stress = stressVal;
+
+      // Update Live Displays
+      document.getElementById('displayBpm').innerText = bpmVal;
+      document.getElementById('sliderBpmValue').innerText = `${bpmVal} BPM`;
+
+      document.getElementById('displayStress').innerText = stressVal;
+      
+      const stressLabels = ["1 - Calm", "2 - Rested", "3 - Mild", "4 - Light", "5 - Moderate", "6 - Elevated", "7 - High", "8 - Severe", "9 - Extreme", "10 - Panic"];
+      document.getElementById('sliderStressValue').innerText = stressLabels[stressVal - 1];
+
+      // Update Live Status Badge
+      const badge = document.getElementById('liveStatusBadge');
+      if (bpmVal > 100 || stressVal > 7) {
+        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-mavaRoseBg text-mavaRoseText flex items-center gap-1";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Caution Needed`;
+      } else if (bpmVal > 85 || stressVal > 5) {
+        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 flex items-center gap-1";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Elevated`;
+      } else {
+        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-mavaGreenBg text-mavaGreenText flex items-center gap-1";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Optimal`;
+      }
+
+      // Update Conditional Advisory Warning Card
+      const advisoryCard = document.getElementById('healthAdvisoryCard');
+      const advisoryText = document.getElementById('advisoryText');
+      const smsPreviewStatus = document.getElementById('smsPreviewStatus');
+
+      if (bpmVal > 100 || stressVal >= 7) {
+        advisoryCard.classList.remove('hidden');
+        if (bpmVal > 100 && stressVal >= 7) {
+          advisoryText.innerText = "Critical Warning: Both elevated cardiac heart rate (>100 BPM) and severe mental stress level detected. Prolonged spikes increase arterial strain. Consider taking a box breathing pause or triggering an emergency check-in.";
+          smsPreviewStatus.innerText = `CRITICAL: HR ${bpmVal} BPM & Stress ${stressVal}/10`;
+        } else if (bpmVal > 100) {
+          advisoryText.innerText = `Elevated Heart Rate Warning (${bpmVal} BPM): Tachycardia symptoms noticed. Sudden heart rate spikes can exacerbate anxiety feedback loops. Rest in a comfortable seated position.`;
+          smsPreviewStatus.innerText = `High HR Alert (${bpmVal} BPM)`;
+        } else {
+          advisoryText.innerText = `High Stress Warning (Level ${stressVal}/10): Severe mental strain signals detected. High anxiety triggers sympathetic fight-or-flight heart responses.`;
+          smsPreviewStatus.innerText = `High Stress Alert (Level ${stressVal}/10)`;
+        }
+      } else {
+        advisoryCard.classList.add('hidden');
+        smsPreviewStatus.innerText = "Standard Wellness Check-in";
+      }
+    }
+
+    // --- Health Log Entry History ---
+    function saveHealthLog() {
+      const noteInput = document.getElementById('logNoteInput');
+      const noteText = noteInput.value.trim();
+      const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const newLog = {
+        time: timeString,
+        bpm: currentState.bpm,
+        stress: currentState.stress,
+        note: noteText || 'General wellness check'
+      };
+
+      currentState.logs.unshift(newLog);
+      noteInput.value = '';
+      renderLogsHistory();
+    }
+
+    function renderLogsHistory() {
+      const container = document.getElementById('logsHistoryContainer');
+      const countLabel = document.getElementById('entryCount');
+      
+      countLabel.innerText = `${currentState.logs.length} entries`;
+
+      if (currentState.logs.length === 0) {
+        container.innerHTML = `<p class="text-xs text-mavaMuted text-center py-4 italic">No entries logged today yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = currentState.logs.map(log => `
+        <div class="p-2.5 bg-mavaBg rounded-2xl border border-slate-100 flex items-center justify-between text-xs">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-mavaText">${log.bpm} BPM</span>
+              <span class="text-mavaMuted">•</span>
+              <span class="font-semibold text-mavaBlueDark">Stress ${log.stress}/10</span>
+            </div>
+            <p class="text-[11px] text-mavaMuted mt-0.5">${log.note}</p>
+          </div>
+          <span class="text-[10px] text-mavaMuted font-medium shrink-0">${log.time}</span>
+        </div>
+      `).join('');
+    }
+
+    // --- 3-Second Countdown SOS Logic ---
+    function startSosCountdown() {
+      const circle = document.getElementById('sosProgressCircle');
+      const btnText = document.getElementById('sosBtnText');
+      const helpText = document.getElementById('sosHelpText');
+      
+      let holdMs = 0;
+      const totalMs = 3000;
+      const strokeDash = 402.12;
+
+      btnText.innerText = "HOLDING...";
+      helpText.innerText = "Keep holding for 3 seconds...";
+
+      currentState.sosCountdownTimer = setInterval(() => {
+        holdMs += 100;
+        const progress = holdMs / totalMs;
+        const offset = strokeDash - (progress * strokeDash);
+        circle.style.strokeDashoffset = offset;
+
+        if (holdMs >= totalMs) {
+          clearInterval(currentState.sosCountdownTimer);
+          triggerEmergencyDispatch();
+        }
+      }, 100);
+    }
+
+    function cancelSosCountdown() {
+      if (currentState.sosCountdownTimer) {
+        clearInterval(currentState.sosCountdownTimer);
+        currentState.sosCountdownTimer = null;
+      }
+      const circle = document.getElementById('sosProgressCircle');
+      circle.style.strokeDashoffset = 402.12;
+      document.getElementById('sosBtnText').innerText = "HOLD SOS";
+      document.getElementById('sosHelpText').innerText = "Hold down for 3s to alert contacts";
+    }
+
+    function triggerEmergencyDispatch() {
+      cancelSosCountdown();
+      alert("🚨 EMERGENCY ALERT DISPATCHED!\n\nAutomated SMS with your real-time GPS location and medical ID has been transmitted to Sarah Chen, Dr. Aris Vance, and 988 Lifeline.");
+    }
+
+    function simulateCall(contactName) {
+      alert(`📞 Calling ${contactName}...\n\nSimulating outgoing phone call.`);
+    }
+
+    function openAddContactModal() {
+      const name = prompt("Enter Contact Name & Role:");
+      const phone = prompt("Enter Contact Phone Number:");
+      if (name && phone) {
+        alert(`Added ${name} (${phone}) to your designated Mava support network.`);
+      }
+    }
+
+    // --- Guided Box Breathing Exercise Logic ---
+    function toggleBreathingExercise() {
+      if (currentState.breathingActive) {
+        resetBreathingExercise();
+      } else {
+        startBreathingExercise();
+      }
+    }
+
+    function startBreathingExercise() {
+      currentState.breathingActive = true;
+      document.getElementById('breatheToggleBtn').innerText = "Pause Session";
+      
+      const glow = document.getElementById('breatheGlow');
+      const circle = document.getElementById('breatheCircle');
+      const phaseText = document.getElementById('breathePhaseText');
+      const timerText = document.getElementById('breatheTimerText');
+
+      const phases = [
+        { name: "Inhale", duration: 4, scale: "scale-125", bg: "bg-mavaBlueSoft" },
+        { name: "Hold", duration: 4, scale: "scale-125", bg: "bg-sky-200" },
+        { name: "Exhale", duration: 4, scale: "scale-100", bg: "bg-mavaBlueLight" },
+        { name: "Hold", duration: 4, scale: "scale-100", bg: "bg-slate-100" }
+      ];
+
+      let currentPhaseIdx = 0;
+      let timeLeft = phases[0].duration;
+
+      function updatePhaseDisplay() {
+        const p = phases[currentPhaseIdx];
+        phaseText.innerText = p.name;
+        timerText.innerText = `${timeLeft}s`;
+        glow.className = `absolute w-44 h-44 ${p.bg} rounded-full transition-all duration-1000 ${p.scale} opacity-70`;
+      }
+
+      updatePhaseDisplay();
+
+      currentState.breathingTimer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          currentPhaseIdx = (currentPhaseIdx + 1) % phases.length;
+          timeLeft = phases[currentPhaseIdx].duration;
+        }
+        updatePhaseDisplay();
+      }, 1000);
+    }
+
+    function resetBreathingExercise() {
+      currentState.breathingActive = false;
+      if (currentState.breathingTimer) {
+        clearInterval(currentState.breathingTimer);
+        currentState.breathingTimer = null;
+      }
+      document.getElementById('breatheToggleBtn').innerText = "Start Session";
+      document.getElementById('breathePhaseText').innerText = "Inhale";
+      document.getElementById('breatheTimerText').innerText = "4s";
+      document.getElementById('breatheGlow').className = "absolute w-44 h-44 bg-mavaBlueLight rounded-full transition-all duration-1000 scale-100 opacity-60";
+    }
+
+    // --- Stealth Mode / Game Disguise ---
+    function toggleStealthMode() {
+      currentState.isStealth = !currentState.isStealth;
+      const appTitleText = document.getElementById('appTitleText');
+      const appSubtitleText = document.getElementById('appSubtitleText');
+      const btnLabel = document.getElementById('disguiseBtnLabel');
+      const bottomNav = document.getElementById('bottomNavBar');
+
+      if (currentState.isStealth) {
+        // Disguise active
+        switchTab('game');
+        appTitleText.innerText = "PETALS";
+        appSubtitleText.innerText = "Casual Zen Puzzle";
+        btnLabel.innerText = "Restore Mava";
+        bottomNav.classList.add('hidden');
+      } else {
+        // Mava active
+        switchTab('tracker');
+        appTitleText.innerText = "MAVA";
+        appSubtitleText.innerText = "Mind & Heart Health";
+        btnLabel.innerText = "Disguise";
+        bottomNav.classList.remove('hidden');
+      }
+    }
+
+    // Secret Tap Trigger on Logo (3 quick taps)
+    document.getElementById('crossLogo').addEventListener('click', () => {
+      currentState.secretTaps++;
+      clearTimeout(currentState.tapTimer);
+      
+      if (currentState.secretTaps >= 3) {
+        currentState.secretTaps = 0;
+        toggleStealthMode();
+      } else {
+        currentState.tapTimer = setTimeout(() => {
+          currentState.secretTaps = 0;
+        }, 800);
+      }
+    });
+
+    // --- Playable Mini-Game "Pastel Petals" ---
+    const gameSymbols = ['🌸', '🌱', '💧', '✨', '🌸', '🌱', '💧', '✨', '🌸', '🌱', '💧', '✨'];
+    let selectedTiles = [];
+
+    function initGame() {
+      const grid = document.getElementById('gameBoardGrid');
+      grid.innerHTML = '';
+      currentState.gameScore = 0;
+      document.getElementById('gameScoreVal').innerText = '0';
+      selectedTiles = [];
+
+      // Shuffle symbols
+      const shuffled = [...gameSymbols].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach((symbol, index) => {
+        const tile = document.createElement('button');
+        tile.className = "w-14 h-14 bg-white rounded-2xl shadow-xs border border-slate-200 flex items-center justify-center text-xl cursor-pointer active:scale-90 transition-all";
+        tile.innerText = symbol;
+        tile.dataset.symbol = symbol;
+        tile.dataset.index = index;
+        tile.onclick = () => handleGameTileClick(tile);
+        grid.appendChild(tile);
+      });
+    }
+
+    function handleGameTileClick(tile) {
+      if (selectedTiles.includes(tile) || tile.classList.contains('opacity-20')) return;
+
+      tile.classList.add('ring-2', 'ring-mavaBlueAccent', 'bg-mavaBlueLight');
+      selectedTiles.push(tile);
+
+      if (selectedTiles.length === 2) {
+        const [t1, t2] = selectedTiles;
+        if (t1.dataset.symbol === t2.dataset.symbol && t1.dataset.index !== t2.dataset.index) {
+          // Match!
+          currentState.gameScore += 20;
+          document.getElementById('gameScoreVal').innerText = currentState.gameScore;
+          setTimeout(() => {
+            t1.className = "w-14 h-14 bg-mavaBg rounded-2xl opacity-20 cursor-default flex items-center justify-center text-xl";
+            t2.className = "w-14 h-14 bg-mavaBg rounded-2xl opacity-20 cursor-default flex items-center justify-center text-xl";
+          }, 250);
+        } else {
+          // No match
+          setTimeout(() => {
+            t1.classList.remove('ring-2', 'ring-mavaBlueAccent', 'bg-mavaBlueLight');
+            t2.classList.remove('ring-2', 'ring-mavaBlueAccent', 'bg-mavaBlueLight');
+          }, 400);
+        }
+        selectedTiles = [];
+      }
+    }
+
+    // --- On Load Initialization ---
+    window.onload = function() {
+      handleMetricChange();
+    };
+  </script>
+</body>
+</html>
